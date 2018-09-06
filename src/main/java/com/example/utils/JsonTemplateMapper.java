@@ -3,6 +3,7 @@ package com.example.utils;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +16,20 @@ public class JsonTemplateMapper {
     
     private JsonTemplateMapper() {
     }
-
-    // TODO refactor
+    
     public static List<String> map(File jsonTemplate, Object flatEntity) throws Exception {
+        return fillJsonTemplate(readAllLines(jsonTemplate), flatEntity);
+    }
+
+    public static List<String> map(String jsonTemplate, Object flatEntity) throws Exception {
+        return fillJsonTemplate(Arrays.asList(separateString(jsonTemplate, "\n")), flatEntity);
+    }
+    
+    //TODO filter by primitve/non-primitive values
+    private static List<String> fillJsonTemplate(List<String> jsonLines, Object flatEntity) throws Exception {
         Map<String, Object> clazzMethods = getMethodsWithReturnValuesByObject(flatEntity);
-        List<String> templateLines = readAllLines(jsonTemplate);
-        for (int i = 0; i < templateLines.size(); i++){
-            String currentLine = templateLines.get(i);
+        for (int i = 0; i < jsonLines.size(); i++){
+            String currentLine = jsonLines.get(i);
             for (Map.Entry<String,Object> clazzMethod: clazzMethods.entrySet()){
                 String wrappedField = lSeparator + clazzMethod.getKey() + rSeparator;
                 if (isStringContainsWrappedField(currentLine,wrappedField)){
@@ -29,17 +37,16 @@ public class JsonTemplateMapper {
                     String modifiedLine = currentLine.replaceAll(
                             lineParseRegex, "\"" + currentRefundValue + "\""
                     );
-                    templateLines.set(i, modifiedLine);
+                    jsonLines.set(i, modifiedLine);
                     break;
                 }
             }
         }
-        return templateLines;
+        return jsonLines;
     }
-
-
+    
     private static Map<String, Object> getMethodsWithReturnValuesByObject(Object object) throws Exception{
-        Map<String,Object> methods = new HashMap<>();
+        Map<String,Object> objectMethodsMap = new HashMap<>();
         if (object != null){
             Class currentClazz = object.getClass();
             Method[] clazzMethods = currentClazz.getMethods();
@@ -47,11 +54,11 @@ public class JsonTemplateMapper {
                 if (isPOJOGetter(currentMethod)) {
                     String adaptedMethodName = adaptMethodName(currentMethod.getName());
                     Object refundValue = currentMethod.invoke(object);
-                    methods.put(adaptedMethodName, refundValue);
+                    objectMethodsMap.put(adaptedMethodName, refundValue);
                 }
             }
         }
-        return methods;
+        return objectMethodsMap;
     }
     
     // TODO need efficient way
@@ -77,6 +84,10 @@ public class JsonTemplateMapper {
         return string.substring(symbolIndex - 1, symbolIndex).toLowerCase();
     }
 
+    private static String[] separateString(String string, String separator){
+        return string.split(separator);
+    }
+    
     private static List<String> readAllLines(File file){
         try {
             return Files.readAllLines(file.toPath());
