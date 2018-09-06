@@ -2,7 +2,7 @@
     "id": $(id),
     "contractNumber": $(contractNumber)
     "account": {
-        "id": $(accountId)
+        "id": $(accountId),
         "username": $(accountUsername)
     }
 }

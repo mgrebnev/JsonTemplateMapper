@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.converter.impl.StandardValueConverter;
 import com.example.model.Lawsuit;
 import com.example.utils.JsonTemplateMapper;
 
@@ -14,7 +15,9 @@ public class Main {
         lawsuit.setContractNumber("85384934234");
         lawsuit.setAccountUsername("vladimirmihailovich");
         File file = getFileFromResources("files/example.json");
-        JsonTemplateMapper.map(file,lawsuit).forEach(System.out::println);
+        StandardValueConverter valueConverter = new StandardValueConverter();
+        JsonTemplateMapper.map(file,lawsuit,valueConverter).forEach(System.out::println);
+        
     }
     
     private static File getFileFromResources(String path) throws URISyntaxException {

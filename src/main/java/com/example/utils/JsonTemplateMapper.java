@@ -1,5 +1,7 @@
 package com.example.utils;
 
+import com.example.converter.ValueConverter;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -17,26 +19,23 @@ public class JsonTemplateMapper {
     private JsonTemplateMapper() {
     }
     
-    public static List<String> map(File jsonTemplate, Object flatEntity) throws Exception {
-        return fillJsonTemplate(readAllLines(jsonTemplate), flatEntity);
+    public static List<String> map(File jsonTemplate, Object flatEntity, ValueConverter valueConverter) throws Exception {
+        return fillJsonTemplate(readAllLines(jsonTemplate), flatEntity, valueConverter);
     }
 
-    public static List<String> map(String jsonTemplate, Object flatEntity) throws Exception {
-        return fillJsonTemplate(Arrays.asList(separateString(jsonTemplate, "\n")), flatEntity);
+    public static List<String> map(String jsonTemplate, Object flatEntity, ValueConverter valueConverter) throws Exception {
+        return fillJsonTemplate(Arrays.asList(separateString(jsonTemplate, "\n")), flatEntity, valueConverter);
     }
     
-    //TODO filter by primitve/non-primitive values
-    private static List<String> fillJsonTemplate(List<String> jsonLines, Object flatEntity) throws Exception {
+    private static List<String> fillJsonTemplate(List<String> jsonLines, Object flatEntity, ValueConverter valueConverter) throws Exception {
         Map<String, Object> clazzMethods = getMethodsWithReturnValuesByObject(flatEntity);
         for (int i = 0; i < jsonLines.size(); i++){
             String currentLine = jsonLines.get(i);
             for (Map.Entry<String,Object> clazzMethod: clazzMethods.entrySet()){
                 String wrappedField = lSeparator + clazzMethod.getKey() + rSeparator;
                 if (isStringContainsWrappedField(currentLine,wrappedField)){
-                    Object currentRefundValue = clazzMethod.getValue();
-                    String modifiedLine = currentLine.replaceAll(
-                            lineParseRegex, "\"" + currentRefundValue + "\""
-                    );
+                    String currentRefundValue = valueConverter.convert(clazzMethod.getValue());
+                    String modifiedLine = currentLine.replaceAll(lineParseRegex, currentRefundValue);
                     jsonLines.set(i, modifiedLine);
                     break;
                 }
