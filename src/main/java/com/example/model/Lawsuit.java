@@ -1,4 +1,4 @@
-package com.example.models;
+package com.example.model;
 
 public class Lawsuit {
     private Integer id;

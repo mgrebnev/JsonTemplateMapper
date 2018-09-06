@@ -23,11 +23,11 @@ public class JsonTemplateMapper {
         for (int i = 0; i < templateLines.size(); i++){
             String currentLine = templateLines.get(i);
             for (Map.Entry<String,Object> clazzMethod: clazzMethods.entrySet()){
-                String currentRefundValue = (String) clazzMethod.getValue();
-                String wrappedField = lSeparator + currentRefundValue + rSeparator;
+                String wrappedField = lSeparator + clazzMethod.getKey() + rSeparator;
                 if (isStringContainsWrappedField(currentLine,wrappedField)){
+                    Object currentRefundValue = clazzMethod.getValue();
                     String modifiedLine = currentLine.replaceAll(
-                            lineParseRegex, "\"" + clazzMethod.getValue() + "\""
+                            lineParseRegex, "\"" + currentRefundValue + "\""
                     );
                     templateLines.set(i, modifiedLine);
                     break;
