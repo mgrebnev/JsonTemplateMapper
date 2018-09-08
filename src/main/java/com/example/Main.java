@@ -1,8 +1,10 @@
 package com.example;
 
-import com.example.converter.impl.StandardValueConverter;
+import com.example.mapper.TemplateMapper;
+import com.example.mapper.converter.ValueConverter;
+import com.example.mapper.impl.JsonTemplateMapper;
+import com.example.mapper.converter.impl.StandardValueConverter;
 import com.example.model.Lawsuit;
-import com.example.utils.JsonTemplateMapper;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -12,11 +14,13 @@ public class Main {
         Lawsuit lawsuit = new Lawsuit();
         lawsuit.setId(1);
         lawsuit.setAccountId(7476232);
-        lawsuit.setContractNumber("85384934234");
+        lawsuit.setContractNumber(null);
         lawsuit.setAccountUsername("vladimirmihailovich");
         File file = getFileFromResources("files/example.json");
-        StandardValueConverter valueConverter = new StandardValueConverter();
-        JsonTemplateMapper.map(file,lawsuit,valueConverter).forEach(System.out::println);
+        
+        ValueConverter valueConverter = new StandardValueConverter();
+        TemplateMapper mapper = new JsonTemplateMapper(valueConverter);
+        mapper.toJson(file,lawsuit).forEach(System.out::println);
         
     }
     

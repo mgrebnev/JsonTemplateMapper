@@ -1,6 +1,7 @@
-package com.example.utils;
+package com.example.mapper.impl;
 
-import com.example.converter.ValueConverter;
+import com.example.mapper.TemplateMapper;
+import com.example.mapper.converter.ValueConverter;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -10,24 +11,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JsonTemplateMapper {
+public class JsonTemplateMapper implements TemplateMapper {
     private static final String lineParseRegex = "['$']['('](\\d+|\\w+|(|[')']|['(']|['-']|['_']|))+[')']";
     
     private static final String lSeparator = "$(";
     private static final String rSeparator  =  ")"; 
     
-    private JsonTemplateMapper() {
+    private ValueConverter valueConverter;
+    
+    public JsonTemplateMapper(ValueConverter valueConverter){
+        this.valueConverter = valueConverter;
     }
     
-    public static List<String> map(File jsonTemplate, Object flatEntity, ValueConverter valueConverter) throws Exception {
-        return fillJsonTemplate(readAllLines(jsonTemplate), flatEntity, valueConverter);
+    public List<String> toJson(File jsonTemplate, Object flatEntity) throws Exception {
+        return fillJsonTemplate(readAllLines(jsonTemplate), flatEntity);
     }
 
-    public static List<String> map(String jsonTemplate, Object flatEntity, ValueConverter valueConverter) throws Exception {
-        return fillJsonTemplate(Arrays.asList(separateString(jsonTemplate, "\n")), flatEntity, valueConverter);
+    public List<String> toJson(String jsonTemplate, Object flatEntity) throws Exception {
+        return fillJsonTemplate(Arrays.asList(separateString(jsonTemplate, "\n")), flatEntity);
     }
     
-    private static List<String> fillJsonTemplate(List<String> jsonLines, Object flatEntity, ValueConverter valueConverter) throws Exception {
+    private List<String> fillJsonTemplate(List<String> jsonLines, Object flatEntity) throws Exception {
         Map<String, Object> clazzMethods = getMethodsWithReturnValuesByObject(flatEntity);
         for (int i = 0; i < jsonLines.size(); i++){
             String currentLine = jsonLines.get(i);
@@ -44,7 +48,7 @@ public class JsonTemplateMapper {
         return jsonLines;
     }
     
-    private static Map<String, Object> getMethodsWithReturnValuesByObject(Object object) throws Exception{
+    private Map<String, Object> getMethodsWithReturnValuesByObject(Object object) throws Exception{
         Map<String,Object> objectMethodsMap = new HashMap<>();
         if (object != null){
             Class currentClazz = object.getClass();
@@ -61,37 +65,45 @@ public class JsonTemplateMapper {
     }
     
     // TODO need efficient way
-    private static boolean isStringContainsWrappedField(String string, String wrappedField){
+    private boolean isStringContainsWrappedField(String string, String wrappedField){
         return string.contains(wrappedField);
     }
     
-    private static boolean isPOJOGetter(Method method){
+    private boolean isPOJOGetter(Method method){
         return method.getName().startsWith("get") && !method.getReturnType().equals(Class.class);
     }
 
-    private static String adaptMethodName(String methodName){
+    private String adaptMethodName(String methodName){
         String adaptedMethodName = removeExpressionFromString(methodName, "get");
         String firstSymbolInLowerCase = toLowerCase(adaptedMethodName, 1);
         return firstSymbolInLowerCase + adaptedMethodName.substring(1, adaptedMethodName.length());
     }
 
-    private static String removeExpressionFromString(String string, String expression){
+    private String removeExpressionFromString(String string, String expression){
         return string.replaceAll(expression, "");
     }
 
-    private static String toLowerCase(String string, int symbolIndex){
+    private String toLowerCase(String string, int symbolIndex){
         return string.substring(symbolIndex - 1, symbolIndex).toLowerCase();
     }
 
-    private static String[] separateString(String string, String separator){
+    private String[] separateString(String string, String separator){
         return string.split(separator);
     }
     
-    private static List<String> readAllLines(File file){
+    private List<String> readAllLines(File file){
         try {
             return Files.readAllLines(file.toPath());
         }catch (Exception ex){
             throw new RuntimeException(ex);
         }
+    }
+
+    public ValueConverter getValueConverter() {
+        return valueConverter;
+    }
+
+    public void setValueConverter(ValueConverter valueConverter) {
+        this.valueConverter = valueConverter;
     }
 }
