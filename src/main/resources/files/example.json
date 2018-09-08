@@ -1,8 +1,0 @@
-{
-    "id": $(id),
-    "contractNumber": $(contractNumber)
-    "account": {
-        "id": $(accountId),
-        "username": $(accountUsername)
-    }
-}
