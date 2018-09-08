@@ -34,4 +34,8 @@ Create TemplateMapper bean:
 Use mapper in rest controller:
 
 ![template_mapper_bean_in_controller](images/screen_7.png)
+
+Result:
+
+![request_to_api](images/screen_8.png)
     
