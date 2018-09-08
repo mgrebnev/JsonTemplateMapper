@@ -1,6 +1,6 @@
-package com.example.mapper;
+package com.solightingstats.mapper;
 
-import com.example.mapper.converter.ValueConverter;
+import com.solightingstats.mapper.converter.ValueConverter;
 
 import java.io.File;
 import java.util.List;

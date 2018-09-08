@@ -1,6 +1,6 @@
-package com.example.mapper.converter.impl;
+package com.solightingstats.mapper.converter.impl;
 
-import com.example.mapper.converter.ValueConverter;
+import com.solightingstats.mapper.converter.ValueConverter;
 
 public class StandardValueConverter implements ValueConverter {
     @Override

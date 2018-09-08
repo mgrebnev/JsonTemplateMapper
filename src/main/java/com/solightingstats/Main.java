@@ -1,10 +1,10 @@
-package com.example;
+package com.solightingstats;
 
-import com.example.mapper.TemplateMapper;
-import com.example.mapper.converter.ValueConverter;
-import com.example.mapper.impl.JsonTemplateMapper;
-import com.example.mapper.converter.impl.StandardValueConverter;
-import com.example.model.Lawsuit;
+import com.solightingstats.mapper.TemplateMapper;
+import com.solightingstats.mapper.converter.ValueConverter;
+import com.solightingstats.mapper.impl.JsonTemplateMapper;
+import com.solightingstats.mapper.converter.impl.StandardValueConverter;
+import com.solightingstats.model.Lawsuit;
 
 import java.io.File;
 import java.net.URISyntaxException;

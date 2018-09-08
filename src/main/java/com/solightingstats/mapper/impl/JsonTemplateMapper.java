@@ -1,7 +1,7 @@
-package com.example.mapper.impl;
+package com.solightingstats.mapper.impl;
 
-import com.example.mapper.TemplateMapper;
-import com.example.mapper.converter.ValueConverter;
+import com.solightingstats.mapper.TemplateMapper;
+import com.solightingstats.mapper.converter.ValueConverter;
 
 import java.io.File;
 import java.lang.reflect.Method;

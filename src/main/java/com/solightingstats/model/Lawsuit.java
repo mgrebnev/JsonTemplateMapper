@@ -1,4 +1,4 @@
-package com.example.model;
+package com.solightingstats.model;
 
 public class Lawsuit {
     private Integer id;
