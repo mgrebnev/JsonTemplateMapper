@@ -30,20 +30,24 @@ public class JsonTemplateMapper implements TemplateMapper {
     public List<String> toJson(String jsonTemplate, Object flatEntity) throws Exception {
         return fillJsonTemplate(Arrays.asList(separateString(jsonTemplate, "\n")), flatEntity);
     }
-    
+
     private List<String> fillJsonTemplate(List<String> jsonLines, Object flatEntity) throws Exception {
         Map<String, Object> clazzMethods = getMethodsWithReturnValuesByObject(flatEntity);
         for (int i = 0; i < jsonLines.size(); i++){
             String currentLine = jsonLines.get(i);
+            boolean isCurrentLineProcessed = false;
             for (Map.Entry<String,Object> clazzMethod: clazzMethods.entrySet()){
                 String wrappedField = lSeparator + clazzMethod.getKey() + rSeparator;
                 if (isStringContainsWrappedField(currentLine,wrappedField)){
                     String currentRefundValue = valueConverter.convert(clazzMethod.getValue());
                     String modifiedLine = currentLine.replaceAll(lineParseRegex, currentRefundValue);
-                    jsonLines.set(i, modifiedLine);
+                    jsonLines.set(i,removeSpecialCharacters(modifiedLine));
+                    isCurrentLineProcessed = true;
                     break;
                 }
             }
+            if (!isCurrentLineProcessed)
+                jsonLines.set(i,removeSpecialCharacters(currentLine));
         }
         return jsonLines;
     }
@@ -79,6 +83,10 @@ public class JsonTemplateMapper implements TemplateMapper {
         return firstSymbolInLowerCase + adaptedMethodName.substring(1, adaptedMethodName.length());
     }
 
+    private String removeSpecialCharacters(String string){
+        return removeExpressionFromString(string, "[\\u0020]|[' ']");
+    }
+    
     private String removeExpressionFromString(String string, String expression){
         return string.replaceAll(expression, "");
     }
