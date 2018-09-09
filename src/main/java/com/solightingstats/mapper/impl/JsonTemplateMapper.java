@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class JsonTemplateMapper implements TemplateMapper {
     private static final String lineParseRegex = "['$']['('](\\d+|\\w+|(|[')']|['(']|['-']|['_']|))+[')']";
@@ -23,15 +24,15 @@ public class JsonTemplateMapper implements TemplateMapper {
         this.valueConverter = valueConverter;
     }
     
-    public List<String> toJson(File jsonTemplate, Object flatEntity) throws Exception {
+    public String toJson(File jsonTemplate, Object flatEntity) throws Exception {
         return fillJsonTemplate(readAllLines(jsonTemplate), flatEntity);
     }
 
-    public List<String> toJson(String jsonTemplate, Object flatEntity) throws Exception {
+    public String toJson(String jsonTemplate, Object flatEntity) throws Exception {
         return fillJsonTemplate(Arrays.asList(separateString(jsonTemplate, "\n")), flatEntity);
     }
 
-    private List<String> fillJsonTemplate(List<String> jsonLines, Object flatEntity) throws Exception {
+    private String fillJsonTemplate(List<String> jsonLines, Object flatEntity) throws Exception {
         Map<String, Object> clazzMethods = getMethodsWithReturnValuesByObject(flatEntity);
         for (int i = 0; i < jsonLines.size(); i++){
             String currentLine = jsonLines.get(i);
@@ -49,7 +50,7 @@ public class JsonTemplateMapper implements TemplateMapper {
             if (!isCurrentLineProcessed)
                 jsonLines.set(i,removeSpecialCharacters(currentLine));
         }
-        return jsonLines;
+        return listToString(jsonLines);
     }
     
     private Map<String, Object> getMethodsWithReturnValuesByObject(Object object) throws Exception{
@@ -107,6 +108,10 @@ public class JsonTemplateMapper implements TemplateMapper {
         }
     }
 
+    private String listToString(List<String> list){
+        return list.stream().collect(Collectors.joining());
+    }
+    
     public ValueConverter getValueConverter() {
         return valueConverter;
     }
