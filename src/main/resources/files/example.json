@@ -1,6 +1,6 @@
 {
     "id": $(id),
-    "contractNumber": $(contractNumber)
+    "contractNumber": $(contractNumber),
     "account": {
         "id": $(accountId),
         "username": $(accountUsername)

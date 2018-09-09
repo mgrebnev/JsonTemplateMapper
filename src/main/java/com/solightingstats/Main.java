@@ -19,7 +19,7 @@ public class Main {
         File file = getFileFromResources("files/example.json");
         ValueConverter valueConverter = new StandardValueConverter();
         TemplateMapper mapper = new JsonTemplateMapper(valueConverter);
-        mapper.toJson(file,lawsuit).forEach(System.out::println);
+        System.out.println(mapper.toJson(file,lawsuit));
     }
     
     private static File getFileFromResources(String path) throws URISyntaxException {
